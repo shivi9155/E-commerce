@@ -1,0 +1,68 @@
+name: Kanha Collection Backend CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    name: Build & Run Unit Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: kanhacollection_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        working-directory: ./backend
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/kanhacollection_db
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: password
+          SPRING_REDIS_HOST: localhost
+          SPRING_REDIS_PORT: 6379
+          APP_JWT_SECRET: c2VjdXJlLWp3dC1zZWNyZXQtZm9yLWthbmhhLWNvbGxlY3Rpb24tZWNvbW1lcmNlLXBsYXRmb3JtLXRlc3Q=
+          APP_RAZORPAY_KEY_ID: rzp_test_mockkey
+          APP_RAZORPAY_KEY_SECRET: mocksecret
+        run: mvn clean verify -B

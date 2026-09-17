@@ -1,0 +1,32 @@
+# ==========================================
+# Spring Boot Backend .gitignore
+# ==========================================
+
+# Maven Build Directory
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Environment & Secret Files
+.env
+.env.local
+*.env
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# IDE Files
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS Files
+.DS_Store
+Thumbs.db

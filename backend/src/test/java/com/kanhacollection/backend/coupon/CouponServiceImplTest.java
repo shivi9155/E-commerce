@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -92,8 +91,8 @@ class CouponServiceImplTest {
         }
 
         @Test
-        @DisplayName("Should apply flat discount correctly")
-        void shouldApplyFlatDiscount() {
+        @DisplayName("Should apply fixed discount correctly")
+        void shouldApplyFixedDiscount() {
             Coupon coupon = buildActiveCoupon(DiscountType.FIXED, BigDecimal.valueOf(100), BigDecimal.ZERO, null);
             when(couponRepository.findByCode("DIWALI20")).thenReturn(Optional.of(coupon));
 
@@ -109,8 +108,8 @@ class CouponServiceImplTest {
         }
 
         @Test
-        @DisplayName("Should cap flat discount at cart subtotal (discount cannot exceed cart value)")
-        void shouldCapFlatDiscountAtSubtotal() {
+        @DisplayName("Should cap fixed discount at cart subtotal (discount cannot exceed cart value)")
+        void shouldCapFixedDiscountAtSubtotal() {
             Coupon coupon = buildActiveCoupon(DiscountType.FIXED, BigDecimal.valueOf(500), BigDecimal.ZERO, null);
             when(couponRepository.findByCode("DIWALI20")).thenReturn(Optional.of(coupon));
 
